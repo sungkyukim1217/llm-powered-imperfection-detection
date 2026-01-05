@@ -1,0 +1,257 @@
+EXAMPLE_PROMPT ="""
+IMPERFECTION PATTERN EXAMPLES:
+
+Form-based Event Capture Example:
+- event_id=3  | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="prepare drinks" | attribute="timestamp" | pattern="form-based events" | corrected="2024-05-06 21:48:42.298"
+- event_id=5  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="Bring drinks" | attribute="timestamp" | pattern="form-based events" | corrected="2024-05-06 21:49:25.915"
+- event_id=6  | case_id=15 | timestamp="2024-05-06 21:49:48.317" | activity="Review drinks"
+
+Inadvertent Time Travel Example:
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete"
+- event_id=9  | case_id=15 | timestamp="2024-05-07 22:25:55.240" | activity="Bring food" | attribute="timestamp" | pattern="inadvertent time" | corrected="2024-05-06 22:25:55.240"
+- event_id=10 | case_id=15 | timestamp="2024-05-06 22:26:03.883" | activity="Deliver to customer"
+
+Unanchored Event Example:
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete"
+- event_id=9  | case_id=15 | timestamp="2024-05-06"              | activity="Bring food" | attribute="timestamp" | pattern="unanchored event" | corrected="2024-05-06 22:25:55.240"
+- event_id=10 | case_id=15 | timestamp="2024-05-06 22:26:03.883" | activity="Deliver to customer" 
+
+Scattered Event Example:
+- event_id=6  | case_id=15 | timestamp="2024-05-06 21:49:48.317" | activity="Review drinks" 
+- event_id=7  | case_id=15 | timestamp="2024-05-06 21:54:49.690" | activity="Bring food" | attribute="activity" | pattern="scattered event" | corrected="Prepare main course"
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete" 
+- event_id=9  | case_id=15 | timestamp="2024-05-06 22:25:55.240" | activity="Bring food"
+
+Elusive Case Example:
+To be continued
+
+Scattered Case Example:
+To be continued
+
+Collateral Events Example:
+- event_id=1  | case_id=15 | timestamp="2024-05-06 21:45:00.000" | activity="Take order" 
+- event_id=2  | case_id=15 | timestamp="2024-05-06 21:45:00.3"   | activity="System ping" | attribute="activity" | pattern="collateral events" | corrected="REQUIRES_RESTRUCTURING"
+- event_id=3  | case_id=15 | timestamp="2024-05-06 21:45:00.7"   | activity="System ack" | attribute="activity" | pattern="collateral events" | corrected="REQUIRES_RESTRUCTURING"
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order" 
+
+Polluted Label Example:
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete"
+- event_id=9  | case_id=15 | timestamp="2024-05-06 22:25:55.240" | activity="Bring food-00001" | attribute="activity" | pattern="polluted Label" | corrected="Bring food"
+- event_id=10 | case_id=15 | timestamp="2024-05-06 22:26:03.883" | activity="Deliver to customer"
+
+Distorted Label Example:
+# Skip
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drnks" | attribute="activity" | pattern="distorted label(Skip)"        | corrected="Bring drinks"
+# Insert
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drrinks" | attribute="activity" | pattern="distorted label(Insert)"      | corrected="Bring drinks"
+# Interchange
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Brign drinks" | attribute="activity" | pattern="distorted label(Interchange)" | corrected="Bring drinks"
+# UpLow
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="bring drinks" | attribute="activity" | pattern="distorted label(UpLow)"       | corrected="Bring drinks"
+# Proximity
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drimks" | attribute="activity" | pattern="distorted label(Proximity)"   | corrected="Bring drinks"
+
+Synonymous Labels Example:
+- event_id=3  | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="prepare order" | attribute="activity" | pattern="form-based events" | corrected="prepare drinks"
+- event_id=5  | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drinks"
+
+Homonymous Label Example:
+- event_id=3  | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="serve drinks" | attribute="activity" | pattern="form-based events" | corrected="prepare drinks"
+- event_id=5  | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drinks"
+
+"""
+
+
+EXAMPLE_PROMPT = r"""
+EXAMPLE 1 (Form-based Event Capture)
+USER_INPUT:
+- event_id=3 | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+- event_id=4 | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="prepare drinks"
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="Bring drinks"
+- event_id=6 | case_id=15 | timestamp="2024-05-06 21:49:48.317" | activity="Review drinks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":4,"case_id":15,"attribute":"timestamp"},
+  {"event_id":5,"case_id":15,"attribute":"timestamp"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":4,"case_id":15,"attribute":"timestamp","pattern":"Form-based Event Capture"},
+  {"event_id":5,"case_id":15,"attribute":"timestamp","pattern":"Form-based Event Capture"}
+]}
+
+EXAMPLE 2 (Inadvertent Time Travel)
+USER_INPUT:
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete"
+- event_id=9  | case_id=15 | timestamp="2024-05-07 22:25:55.240" | activity="Bring food"
+- event_id=10 | case_id=15 | timestamp="2024-05-06 22:26:03.883" | activity="Deliver to customer"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":9,"case_id":15,"attribute":"timestamp"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":9,"case_id":15,"attribute":"timestamp","pattern":"Inadvertent Time Travel"}
+]}
+
+EXAMPLE 3 (Unanchored Event)
+USER_INPUT:
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete"
+- event_id=9  | case_id=15 | timestamp="2024-05-06"              | activity="Bring food"
+- event_id=10 | case_id=15 | timestamp="2024-05-06 22:26:03.883" | activity="Deliver to customer"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":9,"case_id":15,"attribute":"timestamp"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":9,"case_id":15,"attribute":"timestamp","pattern":"Unanchored Event"}
+]}
+
+EXAMPLE 4 (Collateral Events)
+USER_INPUT:
+- event_id=1 | case_id=15 | timestamp="2024-05-06 21:45:00.000" | activity="Take order"
+- event_id=2 | case_id=15 | timestamp="2024-05-06 21:45:00.3"   | activity="System ping"
+- event_id=3 | case_id=15 | timestamp="2024-05-06 21:45:00.7"   | activity="System ack"
+- event_id=4 | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":2,"case_id":15,"attribute":"activity"},
+  {"event_id":3,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":2,"case_id":15,"attribute":"activity","pattern":"Collateral Events"},
+  {"event_id":3,"case_id":15,"attribute":"activity","pattern":"Collateral Events"}
+]}
+
+EXAMPLE 5 (Polluted Label)
+USER_INPUT:
+- event_id=8  | case_id=15 | timestamp="2024-05-06 21:56:19.739" | activity="Signal food complete"
+- event_id=9  | case_id=15 | timestamp="2024-05-06 22:25:55.240" | activity="Bring food-00001"
+- event_id=10 | case_id=15 | timestamp="2024-05-06 22:26:03.883" | activity="Deliver to customer"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":9,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":9,"case_id":15,"attribute":"activity","pattern":"Polluted Label"}
+]}
+
+EXAMPLE 6 (Distorted Label: Skip)
+USER_INPUT:
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drnks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":5,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":5,"case_id":15,"attribute":"activity","pattern":"Distorted Label"}
+]}
+
+EXAMPLE 7 (Distorted Label: Insert)
+USER_INPUT:
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drrinks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":5,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":5,"case_id":15,"attribute":"activity","pattern":"Distorted Label"}
+]}
+
+EXAMPLE 8 (Distorted Label: Interchange)
+USER_INPUT:
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Brign drinks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":5,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":5,"case_id":15,"attribute":"activity","pattern":"Distorted Label"}
+]}
+
+EXAMPLE 9 (Distorted Label: UpLow)
+USER_INPUT:
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="bring drinks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":5,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":5,"case_id":15,"attribute":"activity","pattern":"Distorted Label"}
+]}
+
+EXAMPLE 10 (Distorted Label: Proximity)
+USER_INPUT:
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drimks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":5,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":5,"case_id":15,"attribute":"activity","pattern":"Distorted Label"}
+]}
+
+EXAMPLE 11 (Synonymous Labels)
+USER_INPUT:
+- event_id=3 | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+- event_id=4 | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="prepare order"
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drinks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":4,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":4,"case_id":15,"attribute":"activity","pattern":"Synonymous Labels"}
+]}
+
+EXAMPLE 12 (Homonymous Label)
+USER_INPUT:
+- event_id=3 | case_id=15 | timestamp="2024-05-06 21:46:56.714" | activity="Review order"
+- event_id=4 | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="serve drinks"
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drinks"
+SUSPICIOUS_INPUT(JSON):
+{"suspicious_attributes":[
+  {"event_id":4,"case_id":15,"attribute":"activity"}
+]}
+OUTPUT(JSON):
+{"classified_patterns":[
+  {"event_id":4,"case_id":15,"attribute":"activity","pattern":"Homonymous Label"}
+]}
+"""
+EXAMPLE_PROMPT ="""
+IMPERFECTION PATTERN EXAMPLES:
+
+EXAMPLE_SUSPICIOUS_ATTRIBUTES(JSON):
+EXAMPLE_OUTPUT(JSON):
+
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="prepare drinks" | attribute="timestamp" | pattern="form-based events"
+- event_id=5  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="Bring drinks" | attribute="timestamp" | pattern="form-based events"
+- event_id=9  | case_id=15 | timestamp="2024-05-07 22:25:55.240" | activity="Bring food" | attribute="timestamp" | pattern="inadvertent time"
+- event_id=9  | case_id=15 | timestamp="2024-05-06"              | activity="Bring food" | attribute="timestamp" | pattern="unanchored event"
+- event_id=7  | case_id=15 | timestamp="2024-05-06 21:54:49.690" | activity="Bring food" | attribute="activity" | pattern="scattered event"
+- event_id=2  | case_id=15 | timestamp="2024-05-06 21:45:00.3"   | activity="System ping" | attribute="activity" | pattern="collateral events" 
+- event_id=3  | case_id=15 | timestamp="2024-05-06 21:45:00.7"   | activity="System ack" | attribute="activity" | pattern="collateral events" 
+- event_id=9  | case_id=15 | timestamp="2024-05-06 22:25:55.240" | activity="Bring food-00001" | attribute="activity" | pattern="polluted Label" 
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drnks" | attribute="activity" | pattern="distorted label(Skip)" 
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drrinks" | attribute="activity" | pattern="distorted label(Insert)"  
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Brign drinks" | attribute="activity" | pattern="distorted label(Interchange)" 
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="bring drinks" | attribute="activity" | pattern="distorted label(UpLow)"  
+- event_id=5 | case_id=15 | timestamp="2024-05-06 21:49:25.915" | activity="Bring drimks" | attribute="activity" | pattern="distorted label(Proximity)" 
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="prepare order" | attribute="activity" | pattern="form-based events"
+- event_id=4  | case_id=15 | timestamp="2024-05-06 21:48:42.298" | activity="serve drinks" | attribute="activity" | pattern="form-based events" 
+
+
+
+"""
