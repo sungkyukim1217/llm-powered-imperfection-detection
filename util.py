@@ -7,6 +7,12 @@ from openai import OpenAI
 from threading import Thread
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TextIteratorStreamer
 
+from collections import Counter, defaultdict
+from pm4py.objects.log.util import dataframe_utils
+from pm4py.algo.discovery.dfg import algorithm as dfg_algorithm
+from pm4py.algo.discovery.heuristics import algorithm as heuristics_miner
+from pm4py.objects.conversion.log import converter as log_converter
+from pm4py.objects.conversion.process_tree import converter as pt_converter
 
 def build_event_jsons_depreciated(
     log_name: str,
@@ -213,3 +219,143 @@ def llm_gen(
 
     return obj
 
+def get_dfg_abstraction(df_input):
+s    df_pm4py = df_input[['case_id', 'timestamp', 'activity']].copy().rename(columns={
+        'case_id': "case:concept:name",
+        'timestamp': "time:timestamp",
+        'activity': "concept:name"
+    })
+    df_pm4py["time:timestamp"] = pd.to_datetime(df_pm4py["time:timestamp"], errors="coerce")
+    df_pm4py = dataframe_utils.convert_timestamp_columns_in_df(df_pm4py)
+    event_log = log_converter.apply(df_pm4py)
+    dfg_freq = dfg_algorithm.apply(event_log, variant=dfg_algorithm.Variants.FREQUENCY)
+    dfg_perf = dfg_algorithm.apply(event_log, variant=dfg_algorithm.Variants.PERFORMANCE)
+    rows = []
+    for (source, target), freq in dfg_freq.items():
+        perf = dfg_perf.get((source, target), None)
+        perf_str = f"{perf:.2f}" if isinstance(perf, (int, float)) and perf is not None else "NA"
+        rows.append((source, target, freq, perf_str))
+    rows.sort(key=lambda x: (-x[2], x[0], x[1]))
+    formatted_lines = []
+    formatted_lines.append("### DIRECTLY-FOLLOWS GRAPH (DFG)")
+    formatted_lines.append("This abstraction captures the direct succession of activities (A -> B) to identify process flows and bottlenecks.")
+    formatted_lines.append(f"- **Total Transitions**: {len(rows)} unique paths observed.")
+    formatted_lines.append("- **Metrics**: 'transition_count' (Frequency strength), 'mean_duration_seconds' (Average time taken between activities).")
+    formatted_lines.append("")
+    for source, target, freq, perf in rows:
+        line = f"{source} -> {target} (transition_count={freq}, mean_duration_seconds={perf})"
+        formatted_lines.append(line)
+    return "\n".join(formatted_lines)
+
+def get_variant_abstraction(df_input, top_k=50):
+    df_processed = df_input[['case_id', 'timestamp', 'activity']].copy().rename(columns={
+        'case_id': "case:concept:name",
+        'timestamp': "time:timestamp",
+        'activity': "concept:name"
+    })
+    df_processed["time:timestamp"] = pd.to_datetime(df_processed["time:timestamp"], errors="coerce")
+    case_to_seq = df_processed.groupby("case:concept:name")["concept:name"].apply(list)
+    case_times = (
+        df_processed.groupby("case:concept:name")["time:timestamp"]
+        .agg(lambda s: (s.max() - s.min()).total_seconds())
+    )
+    variant_counter = Counter()
+    variant_durations = defaultdict(list)
+    for cid, seq in case_to_seq.items():
+        var = tuple(seq)
+        variant_counter[var] += 1
+        variant_durations[var].append(case_times.loc[cid])
+    records = []
+    for v, freq in variant_counter.items():
+        durs = variant_durations[v]
+        avg_perf = (sum(durs) / len(durs)) if durs else None
+        records.append({"variant": v, "case_count": freq, "mean_case_duration_seconds": avg_perf})
+    res = pd.DataFrame(records).sort_values(["case_count", "mean_case_duration_seconds"], ascending=[False, True])
+    total_cases = res["case_count"].sum()
+    total_variants = len(res)
+    res_top = res.head(top_k)
+    shown_cases = res_top["case_count"].sum()
+    coverage = (shown_cases / total_cases) * 100 if total_cases > 0 else 0
+    formatted_lines = []
+    formatted_lines.append(f"### PROCESS VARIANTS (Top {len(res_top)})")
+    formatted_lines.append("This list represents the most frequent activity sequences (paths) found in the event log.")
+    formatted_lines.append(f"- **Summary**: Showing top {len(res_top)} out of {total_variants} unique variants.")
+    formatted_lines.append(f"- **Coverage**: These variants cover **{shown_cases}** out of **{total_cases}** total cases (**{coverage:.1f}%**).")
+    formatted_lines.append("")
+    for _, row in res_top.iterrows():
+        variant_seq = row["variant"]
+        if isinstance(variant_seq, (tuple, list)):
+            v_str = " -> ".join(str(v) for v in variant_seq)
+        else:
+            v_str = str(variant_seq)
+            
+        freq = int(row["case_count"])
+        perf = row["mean_case_duration_seconds"]
+        
+        if pd.notnull(perf):
+            perf_str = f"{perf:.2f}"
+        else:
+            perf_str = "NA"
+        line = f"{v_str} (case_count={freq}, mean_case_duration_seconds={perf_str})"
+        formatted_lines.append(line)
+    return "\n".join(formatted_lines)
+    
+def get_petri_net_abstraction(df_input):
+    df_pm4py = df_input[['case_id', 'timestamp', 'activity']].copy().rename(columns={
+        'case_id': "case:concept:name",
+        'timestamp': "time:timestamp",
+        'activity': "concept:name"
+    })
+    df_pm4py["time:timestamp"] = pd.to_datetime(df_pm4py["time:timestamp"], errors="coerce")
+    event_log = log_converter.apply(df_pm4py)
+    threshold = 0.5
+    parameters = {
+        heuristics_miner.Variants.CLASSIC.value.Parameters.DEPENDENCY_THRESH: threshold,
+    }
+    res = heuristics_miner.apply(event_log, parameters=parameters)
+    if isinstance(res, tuple):
+        net, im, fm = res
+    else:
+        net, im, fm = pt_converter.apply(res)
+    start_places = set(im.keys())
+    end_places = set(fm.keys())
+    for i, p in enumerate(net.places):
+        if p in start_places:
+            p.name = "PROCESS_START"
+        elif p in end_places:
+            p.name = "PROCESS_END"
+        else:
+            p.name = f"State_{i}"
+    visible_activities = []
+    for j, t in enumerate(net.transitions):
+        label = t.label
+        if not label: # Label이 없으면 (Silent Transition / tau)
+            t.name = f"ROUTING_LOGIC_{j}"
+            t.label = "SILENT" 
+        else:
+            # 실제 업무 이름은 그대로 유지하고 목록에 추가
+            t.name = label
+            visible_activities.append(label)
+    arcs = []
+    for a in net.arcs:
+        src = getattr(a.source, "name", str(a.source))
+        tgt = getattr(a.target, "name", str(a.target))
+        arcs.append(f"({src} -> {tgt})")
+    initial_marking_str = ", ".join([f"{p.name}:{im[p]}" for p in im])
+    final_marking_str   = ", ".join([f"{p.name}:{fm[p]}" for p in fm])
+    lines = []
+    lines.append("### PETRI NET ABSTRACTION (Process Flow)")
+    lines.append(f"**Mining Parameter**: Heuristics Miner (Dependency Threshold = {threshold}).")
+    lines.append("Use this structure to understand the logical sequence of activities.")
+    lines.append("- **Nodes**: 'PROCESS_START' (Start), 'PROCESS_END' (End), 'State_X' (Intermediate Stages).")
+    lines.append("- **Transitions**: Real activities (e.g., 'Submit') vs. 'ROUTING_LOGIC' (Invisible system logic for branching/merging).")
+    lines.append("")
+    lines.append("**Visible Activities (Business Steps):**")
+    lines.append("[" + ", ".join(f"'{act}'" for act in visible_activities) + "]")
+    lines.append("")
+    lines.append("**Process Flows (Arcs):**")
+    lines.append("\n".join(arcs))
+    lines.append("")
+    lines.append(f"**Initial State**: {initial_marking_str}")
+    lines.append(f"**Final State**: {final_marking_str}")    
+    return "\n".join(lines)
