@@ -1,0 +1,31 @@
+,original,error,syn_source,cosine_similarity
+23,Bring drinks,serve drinks,syn_bank,0.7388876
+326,Bring drinks,carry drinks,syn_bank,0.80273914
+80,Bring drinks,deliver drinks,syn_bank,0.7103946
+93,Bring food,deliver food,syn_bank,0.6501187
+26,Bring food,serve food,syn_bank,0.6361016
+84,Bring food,carry food,syn_bank,0.7293462
+27,Deliver to customer,serve customer,syn_bank,0.70488626
+389,Deliver to customer,bring to customer,syn_bank,0.70278144
+94,Deliver to customer,hand to customer,syn_bank,0.6395941
+231,Prepare main course,ready main course,syn_bank,0.8493777
+82,Prepare main course,cook main course,syn_bank,0.7433513
+91,Prepare main course,make main course,syn_bank,0.9195596
+78,Prepare starter,make starter,syn_bank,0.8846698
+361,Prepare starter,cook starter,syn_bank,0.79588217
+551,Prepare starter,ready starter,syn_bank,0.81206656
+366,Review drinks,inspect drinks,syn_bank,0.7092516
+81,Review drinks,check drinks,syn_bank,0.7520871
+90,Review drinks,verify drinks,syn_bank,0.74557924
+228,Review order,inspect order,syn_bank,0.6174932
+507,Review order,verify order,syn_bank,0.6052327
+77,Review order,check order,syn_bank,0.68560135
+243,Signal food complete,notify food complete,syn_bank,0.6982055
+25,Signal food complete,indicate food complete,syn_bank,0.67939997
+609,Signal food complete,mark food complete,syn_bank,0.63615155
+18,Take order,receive order,syn_bank,0.7059132
+273,Take order,record order,syn_bank,0.51077574
+685,Take order,accept order,syn_bank,0.77302647
+88,prepare drinks,ready drinks,syn_bank,0.7499014
+275,prepare drinks,mix drinks,syn_bank,0.73835564
+1032,prepare drinks,make drinks,syn_bank,0.8840878

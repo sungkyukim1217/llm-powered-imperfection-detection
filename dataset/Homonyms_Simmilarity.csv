@@ -1,0 +1,16 @@
+,group_id,target,source,cosine_source_to_target,group_size
+0,1,Information exchange,info received,0.4641147553920746,2
+1,1,Information exchange,Request info,0.3217216730117798,2
+2,2,Verification process,Perform checks,0.6185433864593506,2
+3,2,Verification process,Check for completeness,0.43605393171310425,2
+4,3,Decision review,Make decision,0.7071064710617065,2
+5,3,Decision review,review request received,0.5697683095932007,2
+6,1,Drink handling,prepare drinks,0.7612079977989197,3
+7,1,Drink handling,Bring drinks,0.6831067800521851,3
+8,1,Drink handling,Review drinks,0.6722955107688904,3
+9,2,Order processing,Take order,0.655174195766449,2
+10,2,Order processing,Review order,0.5349276661872864,2
+11,3,Prepare food,Prepare starter,0.3896484375,2
+12,3,Prepare food,Prepare main course,0.3092362582683563,2
+13,4,Food delivery,Bring food,0.6319898962974548,2
+14,4,Food delivery,Deliver to customer,0.5462605357170105,2

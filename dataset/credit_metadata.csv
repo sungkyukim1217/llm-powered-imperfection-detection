@@ -1,0 +1,251 @@
+original,error,type,count
+Check for completeness,ChecK for coMpleTenesS,UpLow,80
+Check for completeness,Check for cojpleteness,Proximity,79
+Check for completeness,Check fo completeness,Skip,78
+Check for completeness,ChEck for cOMpleteNesS,UpLow,77
+Check for completeness,Check for compelteness,Interchange,77
+Check for completeness,Cehck for completeness,Interchange,74
+Check for completeness,Check for compleeness,Skip,74
+Check for completeness,Check for copmleteness,Interchange,72
+Check for completeness,Dheck for completeness,Proximity,72
+Check for completeness,Checkk for completeness,Insert,72
+Check for completeness,Ceck for completeness,Skip,71
+Check for completeness,Check for cmpleteness,Skip,70
+Check for completeness,CHeCk foR comPlEteneSs,UpLow,69
+Check for completeness,Check for completneess,Interchange,69
+Check for completeness,Check for complteness,Skip,68
+Check for completeness,hCeck for completeness,Interchange,67
+Check for completeness,Check for cCompleteness,Insert,67
+Check for completeness,Check for comcpleteness,Insert,64
+Check for completeness,Check for completebess,Proximity,63
+Make decision,Makedecision,Skip,63
+Check for completeness,Check for completeneass,Insert,61
+Check for completeness,Check for complfteness,Proximity,61
+Check for completeness,Check fOr complEteness,UpLow,59
+Check for completeness,ChEck for completeness,UpLow,58
+Check for completeness,Check for sompleteness,Proximity,57
+Make decision,Make decsiion,Interchange,55
+Perform checks,perform chEcks,UpLow,55
+Check for completeness,Check for comlpleteness,Insert,54
+Perform checks,Perofrm checks,Interchange,53
+Make decision,make decisiON,UpLow,53
+Make decision,Make decison,Skip,52
+Make decision,Make dcision,Skip,52
+Perform checks,PerTform checks,Insert,52
+Perform checks,erform checks,Skip,51
+Perform checks,PerformE checks,Insert,51
+Make decision,Make decjsion,Proximity,51
+Make decision,Make deciison,Interchange,50
+Perform checks,Perform cehcks,Interchange,50
+Perform checks,Oerform checks,Proximity,49
+Perform checks,PerfoMrm checks,Insert,48
+Make decision,Makep decision,Insert,48
+Make decision,aMke decision,Interchange,45
+Perform checks,Perform cheks,Skip,45
+Perform checks,Pwrform checks,Proximity,45
+Perform checks,Perform check,Skip,44
+Perform checks,Perforh checks,Proximity,44
+Perform checks,PerforTm checks,Insert,44
+Make decision,Malke decision,Insert,44
+Make decision,Mqke decision,Proximity,44
+Perform checks,Lerform checks,Proximity,43
+Perform checks,PerfoRm Checks,UpLow,43
+Make decision,Make decisioN,UpLow,42
+Perform checks,Perf;rm checks,Proximity,42
+Perform checks,PerForm checkS,UpLow,42
+Perform checks,Perfor mchecks,Interchange,42
+Perform checks,Perfrm checks,Skip,40
+Perform checks,Pefrorm checks,Interchange,40
+Make decision,Make deCISion,UpLow,40
+Make decision,Make decisoin,Interchange,40
+Make decision,Make decisiIon,Insert,40
+Make decision,Mkae decision,Interchange,39
+Make decision,Make decisio,Skip,38
+Make decision,Make cecision,Proximity,38
+Make decision,Mak decision,Skip,38
+Make decision,",ake decision",Proximity,37
+Make decision,Make decisiOn,UpLow,37
+Perform checks,Performchecks,Skip,37
+info received,info receved,Skip,36
+info received,infp received,Proximity,35
+info received,iNFo receivEd,UpLow,34
+Perform checks,Preform checks,Interchange,34
+Make decision,Make decisipn,Proximity,34
+Make decision,mAke decisioN,UpLow,34
+Perform checks,Perform cheCkS,UpLow,34
+Perform checks,perfoRm checks,UpLow,33
+info received,info recieved,Interchange,33
+Request info,Request inf,Skip,33
+info received,info recived,Skip,32
+Perform checks,PerOform checks,Insert,32
+info received,inforeceived,Skip,32
+Notify accept,NoKtify accept,Insert,32
+info received,info receIved,UpLow,31
+info received,inFo ReceivEd,UpLow,31
+info received,nifo received,Interchange,31
+info received,info recelved,Proximity,30
+Request info,Requestinfo,Skip,30
+info received,info receoved,Proximity,30
+Request info,Rrquest info,Proximity,29
+Request info,Request infIo,Insert,29
+Request info,ReqUeST Info,UpLow,29
+Make decision,vMake decision,Insert,29
+info received,infWo received,Insert,29
+Deliver card,Delier card,Skip,29
+Notify accept,Notify acccept,Insert,28
+info received,info rEceIved,UpLow,28
+Request info,Request Info,UpLow,28
+Notify accept,Notif accept,Skip,28
+Deliver card,eliver card,Skip,28
+Make decision,MaRke decision,Insert,28
+info received,inf received,Skip,28
+Notify accept,NOtify AcCept,UpLow,27
+Deliver card,Delivre card,Interchange,27
+Request info,Requst info,Skip,27
+Notify accept,Notifya accept,Insert,27
+Deliver card,Deliverr card,Insert,27
+info received,infor eceived,Interchange,27
+Request info,Request Vinfo,Insert,27
+Request info,Request Pinfo,Insert,26
+info received,infoQ received,Insert,26
+Notify accept,Notify ccept,Skip,26
+Deliver card,DelivJer card,Insert,25
+Deliver card,Delivee card,Proximity,25
+Deliver card,Deliver carD,UpLow,25
+Deliver card,Delver card,Skip,25
+Notify accept,NotIfy aCcEpt,UpLow,25
+notify reject,notify rejeCt,UpLow,25
+Request info,RequeSt INfO,UpLow,25
+Request info,Request unfo,Proximity,25
+Request info,RequestV info,Insert,25
+Request info,Requet info,Skip,25
+info received,info receFived,Insert,24
+Request info,Reques tinfo,Interchange,24
+notify reject,norify reject,Proximity,24
+Notify accept,Notift accept,Proximity,24
+Request info,eRquest info,Interchange,24
+Request info,Reqeust info,Interchange,24
+Notify accept,nOtify AccEpt,UpLow,24
+Notify accept,Notify accetp,Interchange,24
+Request info,Requesr info,Proximity,24
+info received,lnfo received,Proximity,24
+Notify accept,Noitfy accept,Interchange,24
+Deliver card,Dleiver card,Interchange,24
+Request info,RequesT iNFo,UpLow,23
+Notify accept,Notify accwpt,Proximity,23
+Request info,Request infso,Insert,23
+Deliver card,Deiver card,Skip,23
+info received,info eceived,Skip,23
+Deliver card,Deljver card,Proximity,23
+Notify accept,NoBtify accept,Insert,23
+info received,igfo received,Proximity,23
+Notify accept,Notifyaccept,Skip,23
+Request info,Request ifo,Skip,23
+Request info,Request InFo,UpLow,23
+Request info,Request inof,Interchange,22
+notify reject,ntoify reject,Interchange,22
+Notify accept,NotIfy acCept,UpLow,22
+info received,infos received,Insert,22
+Notify accept,Notiy accept,Skip,22
+notify reject,notif reject,Skip,22
+time out,time ouIt,Insert,22
+Deliver card,Deliver fard,Proximity,22
+notify reject,notif yreject,Interchange,22
+Deliver card,Deliver caXrd,Insert,22
+info received,info receivde,Interchange,22
+Deliver card,DEliver card,UpLow,22
+Deliver card,Deluver card,Proximity,22
+Request info,Request jnfo,Proximity,21
+notify reject,notify rrject,Proximity,21
+Request info,Requset info,Interchange,21
+Deliver card,Delivfr card,Proximity,21
+Request info,Fequest info,Proximity,21
+info received,jinfo received,Insert,21
+notify reject,ontify reject,Interchange,21
+info received,info rceeived,Interchange,21
+Deliver card,DElivEr cArd,UpLow,21
+notify reject,notify rejevt,Proximity,21
+Notify accept,Notify acCEpt,UpLow,21
+Deliver card,Deliver acrd,Interchange,21
+notify reject,noctify reject,Insert,21
+notify reject,noify reject,Skip,21
+notify reject,noltify reject,Insert,21
+Deliver card,DeLiver card,UpLow,20
+Notify accept,Nofify accept,Proximity,20
+Deliver card,Deliver crad,Interchange,20
+time out,time uot,Interchange,20
+Deliver card,deliver Card,UpLow,20
+notify reject,nOTify rejEct,UpLow,20
+notify reject,notfiy reject,Interchange,20
+Notify accept,Notify acept,Skip,20
+Deliver card,Delivoer card,Insert,20
+notify reject,notify greject,Insert,20
+Deliver card,Deliver ard,Skip,20
+info received,iNfo received,UpLow,20
+notify reject,notIfy reject,UpLow,20
+Notify accept,NotifRy accept,Insert,19
+Deliver card,lDeliver card,Insert,19
+notify reject,gotify reject,Proximity,19
+Notify accept,Notifya ccept,Interchange,19
+notify reject,notifY rejecT,UpLow,19
+notify reject,notify rejcet,Interchange,18
+notify reject,noPtify reject,Insert,18
+notify reject,otify reject,Skip,18
+notify reject,jotify reject,Proximity,18
+Notify accept,Notivy accept,Proximity,18
+Notify accept,Ntoify accept,Interchange,18
+time out,tmie out,Interchange,17
+notify reject,notify rejct,Skip,17
+time out,time oht,Proximity,17
+Deliver card,Deliverc ard,Interchange,17
+notify reject,ntify reject,Skip,17
+notify reject,notify RejecT,UpLow,16
+notify reject,notifoy reject,Insert,16
+Notify accept,Notify acsept,Proximity,15
+time out,rime out,Proximity,15
+time out,time ut,Skip,15
+time out,timeout,Skip,14
+time out,tie out,Skip,14
+time out,time ot,Skip,14
+time out,tIme Out,UpLow,14
+time out,timE out,UpLow,14
+time out,"ti,e out",Proximity,13
+time out,tiMe out,UpLow,13
+time out,time ou,Skip,13
+time out,timeC out,Insert,12
+time out,timeo ut,Interchange,12
+time out,time ouUt,Insert,12
+Notify accept,Notif yaccept,Interchange,11
+time out,time otu,Interchange,11
+time out,tSime out,Insert,11
+time out,Time oUt,UpLow,11
+time out,timf out,Proximity,11
+review request received,rwview request received,Proximity,10
+time out,time ojut,Insert,10
+time out,timE ouT,UpLow,10
+time out,tihe out,Proximity,10
+time out,itme out,Interchange,9
+review request received,review request receivOed,Insert,8
+review request received,review requwst received,Proximity,8
+review request received,revie request received,Skip,8
+review request received,review request RecEIved,UpLow,7
+review request received,rveiew request received,Interchange,6
+review request received,reView reQuEst rECeiVeD,UpLow,6
+review request received,review requezt received,Proximity,6
+review request received,review request Oreceived,Insert,6
+review request received,review reqkest received,Proximity,6
+review request received,erview request received,Interchange,6
+review request received,revew request received,Skip,6
+review request received,review requets received,Interchange,6
+review request received,review requst received,Skip,6
+review request received,review reques received,Skip,6
+review request received,review reqVuest received,Insert,6
+review request received,Review reQueSt reCeiVEd,UpLow,5
+review request received,review request rceeived,Interchange,5
+review request received,revieW rEqUest recEiVed,UpLow,5
+review request received,reviEw rEquest received,UpLow,5
+review request received,rview request received,Skip,5
+review request received,review request recevied,Interchange,5
+review request received,review Hrequest received,Insert,5
+review request received,rNeview request received,Insert,5
+review request received,revuew request received,Proximity,5

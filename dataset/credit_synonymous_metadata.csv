@@ -1,0 +1,30 @@
+,original,error,syn_source,cosine_similarity
+10,Check for completeness,validate completeness,syn_bank,0.81864566
+46,Check for completeness,confirm completeness,syn_bank,0.84571993
+254,Check for completeness,verify completeness,syn_bank,0.9222745
+717,Deliver card,dispatch card,syn_bank,0.6033199
+334,Deliver card,send card,syn_bank,0.7414081
+14,Deliver card,issue card,syn_bank,0.5334117
+259,Make decision,determine outcome,syn_bank,0.4089858
+270,Make decision,reach decision,syn_bank,0.67039394
+12,Make decision,take decision,syn_bank,0.8818166
+803,Notify accept,issue acceptance,syn_bank,0.46305373
+569,Notify accept,send acceptance notice,syn_bank,0.64628047
+13,Notify accept,notify acceptance,syn_bank,0.8468797
+11,Perform checks,carry out checks,syn_bank,0.80151176
+55,Perform checks,execute checks,syn_bank,0.84287935
+331,Perform checks,conduct checks,syn_bank,0.76891637
+63,Request info,request information,syn_bank,0.91085255
+827,Request info,ask for information,syn_bank,0.5794892
+412,Request info,request details,syn_bank,0.93956876
+61,info received,details received,syn_bank,0.8977294
+48,info received,information received,syn_bank,0.86664456
+67,info received,data received,syn_bank,0.5873407
+343,notify reject,notify rejection,syn_bank,0.9043658
+323,notify reject,issue rejection,syn_bank,0.50205183
+646,notify reject,send rejection notice,syn_bank,0.67444634
+410,review request received,review request captured,syn_bank,0.8266406
+4255,review request received,review request obtained,syn_bank,0.89098394
+510,time out,operation timeout,syn_bank,0.46828276
+210,time out,process timed out,syn_bank,0.50557226
+324,time out,timeout occurred,syn_bank,0.63881356
