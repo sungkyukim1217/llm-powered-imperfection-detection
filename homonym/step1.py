@@ -1,7 +1,8 @@
 import pm4py
 import pandas as pd
+from collections import defaultdict
 
-def run_step1(df, filter_list=None, dfg_thres = 0.00, case_col='case_id', time_col='timestamp', act_col='activity'):
+def run_step1_(df, filter_list=None, dfg_thres = 0.05, case_col='case_id', time_col='timestamp', act_col='activity'):
     """
     Identifies potential homonym candidates by analyzing execution frequency and structural flow patterns.
     
@@ -76,7 +77,83 @@ def run_step1(df, filter_list=None, dfg_thres = 0.00, case_col='case_id', time_c
     ]    
     print(f"    - Total activities: {len(flow_data_list)}")
     print(f"    - Potential homonym candidates: {len(flow_data_list_filtered)}")
+    
+    if flow_data_list_filtered:
+        sample = flow_data_list_filtered[0]
+        
+        p_sample = sample['predecessors'][:2]
+        s_sample = sample['successors'][:2]
+        p_more = "..." if len(sample['predecessors']) > 2 else ""
+        s_more = "..." if len(sample['successors']) > 2 else ""
+
+        print(f"    - Candidate Sample: {{'activity': '{sample['activity']}', 'predecessors': {p_sample}{p_more}, 'successors': {s_sample}{s_more}}}")
+    else:
+        print("    - No potential homonym candidates found.")
 
     return flow_data_list, flow_data_list_filtered
 
-     
+def run_step1(df, filter_list=None, case_col='case_id', time_col='timestamp', act_col='activity'):
+
+    print(">>> Running Step 1 ")
+    
+    df_pm4py = df[[case_col, time_col, act_col]].copy()
+    df_pm4py.rename(columns={
+        case_col: "case:concept:name",
+        time_col: "time:timestamp",
+        act_col: "concept:name"
+    }, inplace=True)
+    df_pm4py["time:timestamp"] = pd.to_datetime(df_pm4py["time:timestamp"], errors="coerce")
+    
+    heu_net = pm4py.discover_heuristics_net(df_pm4py)
+    
+    temp_preds = defaultdict(list)
+    temp_succs = defaultdict(list)
+    
+    for (src, dst), freq in heu_net.dfg.items():
+        temp_succs[src].append((dst, freq))
+        temp_preds[dst].append((src, freq))
+    
+    all_activities = sorted(df[act_col].unique())
+    flow_data_list = []
+    flow_data_list_filtered = [] 
+
+    for act in all_activities:
+        if filter_list is not None and act not in filter_list:
+            continue
+            
+        pred_list = [item[0] for item in sorted(temp_preds[act], key=lambda x: x[1], reverse=True)]
+        succ_list = [item[0] for item in sorted(temp_succs[act], key=lambda x: x[1], reverse=True)]
+        
+        context_item = {
+            'activity': act,
+            'predecessors': pred_list,
+            'successors': succ_list
+        }
+        
+        flow_data_list.append(context_item)
+        
+        if len(pred_list) >= 2:
+            flow_data_list_filtered.append(context_item)
+
+    counts = df.groupby([case_col, act_col]).size().reset_index(name='count')
+    activities_appearing_twice = counts[counts['count'] >= 2][act_col].unique()
+    
+    flow_data_list_final = [
+        item for item in flow_data_list_filtered 
+        if item['activity'] in activities_appearing_twice
+    ]
+    
+    print(f"    - Total activities: {len(flow_data_list)}")
+    print(f"    - Potential homonym candidates: {len(flow_data_list_final)}")
+    
+    if flow_data_list_final:
+        sample = flow_data_list_final[0]
+        p_sample = sample['predecessors'][:2]
+        s_sample = sample['successors'][:2]
+        p_more = "..." if len(sample['predecessors']) > 2 else ""
+        s_more = "..." if len(sample['successors']) > 2 else ""
+        print(f"    - Candidate Sample: {{'activity': '{sample['activity']}', 'predecessors': {p_sample}{p_more}, 'successors': {s_sample}{s_more}}}")
+    else:
+        print("    - No potential homonym candidates found.")
+
+    return flow_data_list, flow_data_list_final

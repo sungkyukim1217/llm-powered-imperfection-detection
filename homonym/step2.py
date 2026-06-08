@@ -104,6 +104,25 @@ def run_step2(flow_all, flow_filtered):
         if matches:
             target_name = target['activity']
             homonym_candidates[target_name] = [m['matched_activities'] for m in matches]
-            print(f"  - Match found for '{target_name}': {len(matches)} combinations")
+           # print(f"  - Match found for '{target_name}': {len(matches)} combinations")
+
+    targets = list(homonym_candidates.keys())
+    print(f"Mapping Preview (Total: {len(targets)} activities flagged)")
+
+    if targets:
+        first_target = targets[0]
+        combos = homonym_candidates[first_target]
+        
+        print(f"  - Homonym Label (Sample): {first_target}")
+        for i, combo in enumerate(combos[:3]): 
+            print(f"    └─ Candidate {i+1}: {combo}")
+        
+        if len(combos) > 3:
+            print(f"    └─ ... and {len(combos) - 3} more combinations")
             
+        if len(targets) > 1:
+            print(f"  ... and {len(targets) - 1} more target activities discovered.")
+    else:
+        print("  - No homonym candidates discovered through structural matching.")
+    
     return homonym_candidates

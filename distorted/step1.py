@@ -42,16 +42,12 @@ def run_step1(llm, model_, llm_repetition, activity_list_json, sys_prompt, user_
     prompt = [{"role": "system", "content": sys_prompt},
               {"role": "user", "content": user_prompt}]
     combined_data = set() 
-    any_found = False     
     for i in range(llm_repetition):
         print(f"    Repetition {i + 1}/{llm_repetition}", end="\r")
 
         result = llm_gen(model_version=model_, model_instance=llm, prompt=prompt)
         if result.get('found'):
-            any_found = True
             combined_data.update(result.get('original_activity', []))
-    final_result = {
-        "found": any_found,
-        "original_activity": sorted(list(combined_data)) 
-    }
-    return final_result
+    clean_activities = sorted(list(combined_data))      
+    return clean_activities
+

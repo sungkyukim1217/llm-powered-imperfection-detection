@@ -88,41 +88,11 @@ def split_cases_analysis(df, target_act, original_acts, is_step4_1):
         
     return df_target_total, df_origin_only
 
-def run_step4(llm, model_, llm_repetition, filtered_candidates, df_new, sys_prompt_1, user_prompt_tmpl_1, sys_prompt_2, user_prompt_tmpl_2):
-    """
-    Performs a final, high-fidelity validation of homonyms using dual-perspective path simulations.
-    
-    This function executes the most rigorous test in the pipeline by forcing the LLM to 
-    simulate process executions from two different directions:
-    
-    Perspective 1 (Substitution): "If we hide the detailed labels, does the process look 
-    identical to the simplified one?" (Validates if the target is a proper surrogate).
-    Perspective 2 (Reconstruction): "Can we logically break down every instance of the 
-    simplified label back into its detailed original parts?" (Validates logical decomposition).
+def run_step5(llm, model_, llm_repetition, filtered_candidates, df_new, sys_prompt, user_prompt_tmpl):
 
-    Validation Logic:
-    - Path Profiling: Converts split datasets into variant summaries for the LLM to 'read' the process.
-    - Dual Prompting: Uses two distinct sets of System/User prompts to prevent bias and ensure 
-      consistency from both 'bottom-up' and 'top-down' viewpoints.
-    - Statistical Consensus: Employs a voting threshold for each perspective. If either 
-      simulation perspective confirms the homonym relationship with high confidence (>= 50%), 
-      the candidate is officially validated.
-
-    Args:
-        llm: The LLM interface for structural and behavioral simulation.
-        model_: String identifier for the model version.
-        llm_repetition: Number of iterations per perspective to ensure result stability.
-        filtered_candidates: Semantic-validated homonym groups from Step 3.
-        df_new: The event log DataFrame.
-        sys_prompt_1/2: Strategic instructions for Substitution and Reconstruction simulations.
-        user_prompt_tmpl_1/2: Templates providing the profiled variant data to the LLM.
-
-    Returns:
-        dict: The final, triple-validated dictionary of homonymous mappings.
-    """
     print(f"\n>>> Running Step 4 with {llm_repetition} repetitions...")
     
-    homonym_predict_4 = {}
+    synonym_predict_5 = {}
 
     for target_name, candidates in filtered_candidates.items():
         for combo in candidates:

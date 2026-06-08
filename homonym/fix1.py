@@ -4,8 +4,8 @@ import json
 from util import llm_gen
 import pm4py
 from collections import Counter
-
 constants.SHOW_PROGRESS_BAR = False
+
 def analyze_variants(df, name="Dataset", variant_coverage = 0.8, variant_threshold = 1.0):
     """
     Same as step4's
@@ -76,8 +76,7 @@ def split_cases_analysis(df, target_act, original_acts):
         has_origin = not acts.isdisjoint(original_acts_set)
         if has_target:
             target_total_case_ids.append(case_id)
-        #elif has_origin:
-        else:
+        elif has_origin:
             origin_only_case_ids.append(case_id)
             
     df_target_total = df[df['case_id'].isin(target_total_case_ids)].copy()
@@ -85,81 +84,57 @@ def split_cases_analysis(df, target_act, original_acts):
     
     return df_target_total, df_origin_only
 
-def run_step5(llm, model_, llm_repetition, filtered_homonyms, df, sys_prompt, user_prompt_tmpl):
-    """
-    Selects the optimal semantic decomposition for a homonymous label through comparative simulation.
-    
-    This function evaluates multiple 'Candidate Options' for a single homonymous activity and 
-    picks the one that best explains the legacy process structure. It ensures that the 
-    disaggregation of a generic label (e.g., 'Task') into specific ones (e.g., 'Task_A', 'Task_B') 
-    is both minimalist and structurally accurate.
 
-    The selection logic follows a strict "Comparative Reconstruction" protocol:
-    1. Multi-Option Simulation: For each candidate list, the LLM performs a mental restoration 
-       of the target label within the process variants.
-    2. Parsimony & Evidence Check: It prioritizes the most precise list while rejecting 
-       'ghost candidates' (labels in the option list that are never actually used in the 
-       restoration context).
-    3. Structural Superiority: It favors the candidate set whose simulated paths show the 
-       highest 'Backbone Alignment' (matching high-frequency variants) with the legacy data.
-    4. Consensus Voting: If multiple options exist, the LLM votes 'llm_repetition' times. 
-       The most frequently selected combination is designated as the final semantic pattern.
-
-    Args:
-        llm: The LLM interface for comparative pattern analysis and decision-making.
-        model_: String identifier for the model architecture version.
-        llm_repetition: Number of iterations for voting to ensure statistical consensus.
-        filtered_homonyms: Validated homonym groups from Step 4.
-        df: The event log DataFrame used for variant profiling and splitting.
-        sys_prompt: Strategic instructions defining selection priority (Parsimony vs. Backbone).
-        user_prompt_tmpl: A template for presenting candidate options and baseline dataset variants.
-
-    Returns:
-        dict: A finalized mapping dictionary where each homonymous label is assigned 
-              to exactly one optimized list of original activities.
-    """
-    
-    
-    final_prediction_results = {}
-
-    for target_name, candidates in filtered_homonyms.items():
-        if len(candidates) == 1:
-            print(f"  - Finalizing Patterns for: {target_name} (Auto-selected: Single candidate)")
-            final_prediction_results[target_name] = candidates[0]
+def run_fix1(llm, model_, llm_repetition, finalized_mapping, df, sys_prompt, user_prompt_tmpl):
+    fix1_results = {}
+    for target_name, selected_candidates in finalized_mapping.items():
+        print(f"\n  - Restoring Traces for: {target_name} ({llm_repetition} Iterations)")
+        df_t, df_o = split_cases_analysis(df, target_name, selected_candidates)
+        target_var_json = analyze_variants(df_t, name="Homonymous_Labels_Cases")
+        input_ranks = {int(v['rank']) for v in target_var_json.get('variants', []) if 'rank' in v}
+        if not input_ranks:
+            print(f"    [Error] No ranks found in Dataset 2 for {target_name}.")
             continue
-        print(f"  - Finalizing Patterns for: {target_name} (LLM Voting required)")
-        merged_list = list(set(item for sublist in candidates for item in sublist))
-        df_t, df_o = split_cases_analysis(df, target_name, merged_list)
-        origin_var = json.dumps(analyze_variants(df_o, name="Original_Labels_Cases"), indent=4, ensure_ascii=False)
-        target_var = json.dumps(analyze_variants(df_t, name="Homonymous_Labels_Cases"), indent=4, ensure_ascii=False)
-        candidates = json.dumps(candidates, indent=4, ensure_ascii=False)
+        origin_var_str = json.dumps(analyze_variants(df_o, name="Original_Labels_Cases"), indent=4, ensure_ascii=False)
+        target_var_str = json.dumps(target_var_json, indent=4, ensure_ascii=False)
         user_prompt = user_prompt_tmpl.format(
-            HOMONYM_STEP5_INPUT1 = target_name,
-            HOMONYM_STEP5_INPUT2 = candidates,
-            HOMONYM_STEP5_INPUT3 = origin_var,
-            HOMONYM_STEP5_INPUT4 = target_var)
+            HOMONYM_FIX1_INPUT1 = target_name,
+            HOMONYM_FIX1_INPUT2 = selected_candidates,
+            HOMONYM_FIX1_INPUT3 = origin_var_str,
+            HOMONYM_FIX1_INPUT4 = target_var_str
+        )
         prompt = [
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": user_prompt}
         ]
-        votes = []
-
+        collected_rank_paths = {rank: [] for rank in input_ranks}
         for i in range(llm_repetition):
-            response = llm_gen(model_version=model_, model_instance=llm, prompt=prompt)
-            selected_combo = tuple(response.get('candidate_originals', []))
-            if selected_combo:
-                votes.append(selected_combo)
-        if votes:
-            most_common_combo, count = Counter(votes).most_common(1)[0]
-            final_prediction_results[target_name] = list(most_common_combo)            
-            print(f"    => [SELECTED] {list(most_common_combo)} ({count}/{len(votes)} votes)")
-
-    print(f"\n>>> Mapping Preview (Total: {len(final_prediction_results)} groups)")
-    for target, selected_list in final_prediction_results.items():
-        preview_items = selected_list[:5]
-        extra_count = max(0, len(selected_list) - 5)
-        
-        print(f"  - {target}: {preview_items} ... (+{extra_count} more)")
-    
-    return final_prediction_results
-
+            success = False
+            fail_count = 0
+            while not success:
+                response = llm_gen(model_version=model_, model_instance=llm, prompt=prompt)
+                if not response or not isinstance(response, dict):
+                    fail_count += 1
+                    print(f"    [Retry] Invalid JSON (Fail: {fail_count})")
+                    continue
+                try:
+                    response_ranks = {int(k) for k in response.keys() if str(k).isdigit()}
+                except ValueError:
+                    fail_count += 1
+                    continue
+                if input_ranks == response_ranks:
+                    for r_str, path in response.items():
+                        collected_rank_paths[int(r_str)].append(path)
+                    success = True
+                else:
+                    fail_count += 1
+                    print(f"    [Retry] Rank Mismatch (Fail: {fail_count})")
+        final_restored_map = {}
+        for rank in sorted(input_ranks):
+            paths = collected_rank_paths[rank]
+            if paths:
+                best_path, _ = Counter(paths).most_common(1)[0]
+                final_restored_map[str(rank)] = best_path
+        fix1_results[target_name] = final_restored_map
+        print(f"    => [DONE] {target_name}: Restoration complete with voting.")
+    return fix1_results

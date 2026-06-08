@@ -63,7 +63,7 @@ def run_step3(llm, model_, llm_repetition, homonym_candidates, flow_all, sys_pro
             ]
             found_count = 0
             for attempt in range(llm_repetition):
-                print(f"    Repetition {attempt + 1}/{llm_repetition}", end="\r") # 같은 줄에 업데이트
+                print(f"    Repetition {attempt + 1}/{llm_repetition}", end="\r") 
                 res = llm_gen(model_version=model_, model_instance=llm, prompt=prompt)
                 if res.get('found'):
                     found_count += 1
@@ -72,4 +72,15 @@ def run_step3(llm, model_, llm_repetition, homonym_candidates, flow_all, sys_pro
                     filtered_homonyms[target_name] = []
                 filtered_homonyms[target_name].append(combo)
 
+    target_keys = list(filtered_homonyms.keys())
+    print(f"Mapping Preview (Total: {len(target_keys)} groups)")
+
+    for target in target_keys[:3]: 
+        candidates = filtered_homonyms[target]
+        print(f"  - Target: [{target}]")
+        print(f"    └─ Sample: {candidates[0]} ({len(candidates)} total groups)")
+
+    if len(target_keys) > 3:
+        print(f"  ... and {len(target_keys) - 3} more targets.")
+    
     return filtered_homonyms
